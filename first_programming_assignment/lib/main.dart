@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 
 void main() {
   runApp(MyApp());
@@ -48,6 +52,27 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String _setup = "";
+  String _punchline = "";
+
+  Future<void> getJoke() async {
+    var url = Uri.parse('https://manatee-jokes.p.rapidapi.com/manatees/random');
+
+    // Await the http get response, then decode the json-formatted response.
+    var response = await http.get(url, headers: {"x-rapidapi-key": "71a924fb43msh18325ca669d23f3p1cb2ffjsne06b272ca3b7",
+      "x-rapidapi-host": "manatee-jokes.p.rapidapi.com", "Host": "manatee-jokes.p.rapidapi.com"});
+    setState(() {
+      if (response.statusCode == 200) {
+        var body = convert.jsonDecode(response.body);
+        //print('Joke: $body');
+        _setup = body["setup"];
+        _punchline = body["punchline"];
+        //print("$_setup then $_punchline");
+      } else {
+        print('Request failed with status: ${response.statusCode}.');
+      }
+    });
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -57,6 +82,9 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+      //var url = Uri.parse("https://dad-jokes.p.rapidapi.com/random/joke");
+      //http.Request response = http.get(url, headers: {"x-rapidapi-key": "71a924fb43msh18325ca669d23f3p1cb2ffjsne06b272ca3b7", "x-rapidapi-host": "dad-jokes.p.rapidapi.com"});
+      //_body = response.body;
     });
   }
 
@@ -94,20 +122,18 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            Text("$_setup"),
+            Text("\n"),
+            Text("$_punchline"),
+            //Text('$_counter', style: Theme.of(context).textTheme.headline4,),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: getJoke,
         tooltip: 'Increment',
-        child: Icon(Icons.add),
+        //child: Icon(Icons.add),
+        child: Text("Joke!"),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
