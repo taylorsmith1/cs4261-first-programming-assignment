@@ -72,6 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
         print('Request failed with status: ${response.statusCode}.');
       }
     });
+    var postUrl = Uri.parse("https://t32r7n7bl1.execute-api.us-east-2.amazonaws.com/stage-1/?setup=$_setup?&joke=$_punchline");
+    var post = http.post(postUrl);
   }
 
   void _incrementCounter() {
